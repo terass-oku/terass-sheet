@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>販売戦略シート｜TERASS</title>
+<style>
+:root {
+  --navy: #0f1f3d;
+  --blue: #1d4ed8;
+  --blue-lt: #eff6ff;
+  --blue-mid: #3b82f6;
+  --teal: #0e7490;
+  --gold: #b45309;
+  --gold-lt: #fffbeb;
+  --green: #15803d;
+  --green-lt: #f0fdf4;
+  --red: #dc2626;
+  --red-lt: #fef2f2;
+  --gray: #64748b;
+  --gray-lt: #f1f5f9;
+  --line: #e2e8f0;
+  --white: #ffffff;
+  --text: #0f172a;
+  --text-sub: #475569;
+  --radius: 12px;
+  --tap: 48px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  background: var(--navy);
+  color: var(--text);
+  font-size: 15px;
+  overscroll-behavior: none;
+}
+
+/* ===== SHELL ===== */
+#shell {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--gray-lt);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== TOP BAR ===== */
+#topbar {
+  background: var(--navy);
+  color: #fff;
+  padding: 12px 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding-top: max(12px, env(safe-area-inset-top));
+}
+.brand { font-size: 13px; font-weight: 700; color: #93c5fd; letter-spacing: .06em; }
+.brand span { color: #fff; margin-left: 4px; font-size: 12px; font-weight: 400; opacity: .7; }
+#save-badge {
+  font-size: 11px; color: #86efac; opacity: 0;
+  transition: opacity .4s;
+}
+
+/* ===== STEP INDICATOR ===== */
+#steps {
+  background: var(--navy);
+  padding: 0 16px 12px;
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.step-dot {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,.2);
+  transition: background .3s;
+}
+.step-dot.active { background: #60a5fa; }
+.step-dot.done { background: #34d399; }
+
+/* ===== SCROLL AREA ===== */
+#scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 14px 0;
+}
+
+/* ===== PAGE HEADER ===== */
+.page-hd {
+  margin-bottom: 14px;
+}
+.page-hd h1 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.2;
+}
+.page-hd p {
+  font-size: 12px;
+  color: var(--gray);
+  margin-top: 3px;
+}
+
+/* ===== CARD ===== */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+}
+.card-lbl {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--blue);
+  letter-spacing: .08em;
+  padding: 12px 14px 0;
+  text-transform: uppercase;
+}
+.card-body { padding: 10px 14px 14px; }
+
+/* ===== FIELD ===== */
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 0; }
+.field > label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-sub);
+  margin-bottom: 6px;
+}
+.field input[type="text"],
+.field input[type="number"],
+.field textarea,
+.field select {
+  width: 100%;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 13px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--white);
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color .15s;
+}
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(29,78,216,.1);
+}
+.field textarea { resize: none; min-height: 80px; line-height: 1.6; }
+.field .hint { font-size: 11px; color: var(--gray); margin-top: 4px; }
+
+/* 横並び数値入力 */
+.inline-inputs { display: flex; gap: 8px; align-items: center; }
+.inline-inputs input { flex: 1; }
+.inline-inputs span { font-size: 13px; color: var(--text-sub); white-space: nowrap; }
+
+/* ===== TAB SELECTOR (選択UI) ===== */
+.tab-sel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 2px;
+}
+.tab-sel input { display: none; }
+.tab-sel label {
+  display: block;
+  padding: 9px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: all .12s;
+  background: var(--white);
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.tab-sel label:active { transform: scale(.97); }
+.tab-sel input:checked + label {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: var(--white);
+  font-weight: 700;
+}
+/* マルチセレクト */
+.tab-sel.multi input:checked + label {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--white);
+}
+
+/* ===== EQUIPMENT TOGGLE ===== */
+.equip-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+.equip-item:last-child { border-bottom: none; }
+.equip-name { flex: 1; font-size: 14px; font-weight: 500; color: var(--text); }
+.eq-btns { display: flex; gap: 5px; flex-shrink: 0; }
+.eq-btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1.5px solid var(--line);
+  background: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  min-width: 44px;
+  text-align: center;
+  transition: all .12s;
+  color: var(--text-sub);
+}
+.eq-btn:active { transform: scale(.95); }
+.eq-btn.yes { background: var(--green-lt); border-color: var(--green); color: var(--green); }
+.eq-btn.no  { background: var(--red-lt);  border-color: var(--red);   color: var(--red); }
+.eq-btn.unk { background: var(--gold-lt); border-color: var(--gold);  color: var(--gold); }
+.equip-note-input {
+  display: none;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text);
+  margin-top: 6px;
+}
+.equip-note-input.show { display: block; }
+.equip-note-input:focus { outline: none; border-color: var(--blue); }
+
+/* equip category header */
+.equip-cat {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: var(--blue);
+  text-transform: uppercase;
+  padding: 12px 0 4px;
+}
+
+/* ===== PHASE ROW ===== */
+.phase-row {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.phase-row:last-child { border-bottom: none; }
+.phase-badge {
+  display: inline-block;
+  background: var(--blue-lt);
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  letter-spacing: .04em;
+}
+.phase-row .inline-inputs { margin-top: 4px; }
+
+/* ===== CHANNEL TOGGLE ===== */
+.ch-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+.ch-item:last-child { border-bottom: none; }
+.ch-icon { font-size: 22px; flex-shrink: 0; }
+.ch-info { flex: 1; }
+.ch-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.ch-sub  { font-size: 11px; color: var(--gray); margin-top: 1px; }
+.toggle {
+  width: 46px; height: 26px;
+  border-radius: 13px;
+  background: var(--line);
+  position: relative;
+  cursor: pointer;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+.toggle.on { background: var(--blue); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+  transition: left .2s;
+}
+.toggle.on::after { left: 23px; }
+.ch-detail { padding: 0 0 8px 34px; }
+.ch-detail select {
+  width: 100%;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--white);
+  -webkit-appearance: none;
+  margin-bottom: 6px;
+}
+.ch-detail select:focus { outline: none; border-color: var(--blue); }
+
+/* ===== SUMMARY CARDS ===== */
+.sum-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.sum-box {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  border-top: 3px solid var(--blue);
+}
+.sum-box.gold { border-top-color: var(--gold); }
+.sum-box.green { border-top-color: var(--green); }
+.sum-box .sl { font-size: 10px; color: var(--gray); font-weight: 700; letter-spacing: .04em; }
+.sum-box .sv { font-size: 16px; font-weight: 800; color: var(--text); line-height: 1.2; margin-top: 2px; }
+.sum-box .ss { font-size: 10px; color: var(--gray); }
+
+/* ===== BOTTOM NAV ===== */
+#bottom {
+  background: var(--white);
+  border-top: 1px solid var(--line);
+  padding: 10px 14px;
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.btn {
+  height: var(--tap);
+  border-radius: 10px;
+  border: none;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .12s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn:active { transform: scale(.97); opacity: .9; }
+.btn-back { background: var(--gray-lt); color: var(--text-sub); flex: 0 0 80px; }
+.btn-next { background: var(--blue); color: var(--white); flex: 1; }
+.btn-pdf  { background: var(--navy); color: var(--white); flex: 1; }
+.btn-reset { background: var(--gray-lt); color: var(--red); flex: 0 0 80px; font-size: 13px; }
+
+/* ===== CONFIRM PAGE ===== */
+.conf-sec {
+  background: var(--white);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.conf-hd {
+  background: var(--navy);
+  color: var(--white);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.conf-bd { padding: 10px 14px; }
+.conf-row {
+  display: flex;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  align-items: flex-start;
+}
+.conf-row:last-child { border-bottom: none; }
+.conf-lbl { font-size: 11px; font-weight: 700; color: var(--gray); min-width: 100px; flex-shrink: 0; padding-top: 1px; }
+.conf-val { font-size: 13px; color: var(--text); line-height: 1.5; word-break: break-all; }
+
+/* ===== PRINT ===== */
+#print-area { display: none; }
+
+@media print {
+  #shell { display: none !important; }
+  #print-area {
+    display: block !important;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    font-size: 11px;
+    color: #0f172a;
+    padding: 16px 20px;
+    background: #fff;
+    max-width: 100%;
+  }
+  .p-title {
+    font-size: 18px; font-weight: 800; text-align: center;
+    padding-bottom: 6px; border-bottom: 2px solid #0f1f3d; margin-bottom: 6px;
+  }
+  .p-meta { text-align: center; font-size: 10px; color: #888; margin-bottom: 16px; }
+  .p-sec {
+    border: 1px solid #bbb; border-radius: 4px;
+    margin-bottom: 10px; page-break-inside: avoid;
+  }
+  .p-hd {
+    background: #0f1f3d !important; color: #fff !important;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    padding: 5px 11px; font-size: 11px; font-weight: 700;
+  }
+  .p-bd { padding: 6px 11px; }
+  .p-row { display: flex; gap: 8px; padding: 3px 0; border-bottom: 1px solid #eee; }
+  .p-row:last-child { border-bottom: none; }
+  .p-lbl { font-size: 10px; font-weight: 700; color: #555; min-width: 130px; flex-shrink: 0; }
+  .p-val { font-size: 11px; color: #0f172a; word-break: break-all; }
+}
+
+/* ===== PAGES ===== */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ===== SCROLL SPACER ===== */
+.spacer { height: 24px; }
+</style>
+</head>
+<body>
+
+<div id="print-area"></div>
+
+<div id="shell">
+  <div id="topbar">
+    <div class="brand">TERASS <span>販売戦略シート</span></div>
+    <div id="save-badge">保存済み ✓</div>
+  </div>
+  <div id="steps">
+    <div class="step-dot active" id="dot0"></div>
+    <div class="step-dot" id="dot1"></div>
+    <div class="step-dot" id="dot2"></div>
+    <div class="step-dot" id="dot3"></div>
+    <div class="step-dot" id="dot4"></div>
+  </div>
+
+  <div id="scroll">
+
+    <!-- ===== PAGE 0: 物件概要 ===== -->
+    <div class="page active" id="p0">
+      <div class="page-hd">
+        <h1>🏠 物件概要</h1>
+        <p>売主と一緒に確認しながら入力してください</p>
+      </div>
+
+      <div class="card">
+        <div class="card-lbl">基本情報</div>
+        <div class="card-body">
+          <div class="field">
+            <label>所在地</label>
+            <input type="text" id="address" placeholder="例）大阪市北区梅田1-1-1 ○○マンション301号室">
+          </div>
+          <div class="field">
+            <label>物件種別</label>
+            <div class="tab-sel">
+              <input type="radio" name="type" id="t1" value="マンション"><label for="t1">🏢 マンション</label>
+              <input type="radio" name="type" id="t2" value="戸建て"><label for="t2">🏡 戸建て</label>
+              <input type="radio" name="type" id="t3" value="土地"><label for="t3">🌿 土地</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>間取り</label>
+            <div class="tab-sel">
+              <input type="radio" name="madori" id="m1" value="1K/1DK"><label for="m1">1K/1DK</label>
+              <input type="radio" name="madori" id="m2" value="1LDK"><label for="m2">1LDK</label>
+              <input type="radio" name="madori" id="m3" value="2LDK"><label for="m3">2LDK</label>
+              <input type="radio" name="madori" id="m4" value="3LDK"><label for="m4">3LDK</label>
+              <input type="radio" name="madori" id="m5" value="4LDK以上"><label for="m5">4LDK以上</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>専有面積（㎡）</label>
+            <input type="number" id="area" placeholder="例）65.2" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label>築年（西暦）</label>
+            <input type="number" id="built" placeholder="例）2005" inputmode="numeric">
+            <div class="hint" id="age-hint"></div>
+          </div>
+          <div class="field">
+            <label>階数 ／ 総階数</label>
+            <div class="inline-inputs">
+              <input type="number" id="floor" placeholder="例）5" inputmode="numeric">
+              <span>階 ／</span>
+              <input type="number" id="ftotal" placeholder="例）14" inputmode="numeric">
+              <span>階建</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>最寄駅・徒歩</label>
+            <div class="inline-inputs">
+              <input type="text" id="station" placeholder="駅名" style="flex:2">
+              <span>徒歩</span>
+              <input type="number" id="walk" placeholder="7" inputmode="numeric" style="flex:1">
+              <span>分</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-lbl">状況・条件</div>
+        <div class="card-body">
+          <div class="field">
+            <label>現況</label>
+            <div class="tab-sel">
+              <input type="radio" name="status" id="s1" value="居住中"><label for="s1">居住中</label>
+              <input type="radio" name="status" id="s2" value="空室"><label for="s2">空室</label>
+              <input type="radio" name="status" id="s3" value="賃貸中"><label for="s3">賃貸中</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>リフォーム歴</label>
+            <div class="tab-sel">
+              <input type="radio" name="reform" id="r1" value="あり"><label for="r1">あり</label>
+              <input type="radio" name="reform" id="r2" value="なし"><label for="r2">なし</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>リフォーム詳細</label>
+            <input type="text" id="reform-detail" placeholder="例）2020年 キッチン・浴室リフォーム済み">
+          </div>
+          <div class="field">
+            <label>引渡し時期希望</label>
+            <input type="text" id="delivery" placeholder="例）2025年3月以降、相談可">
+          </div>
+          <div class="field">
+            <label>管理費（円/月）</label>
+            <input type="number" id="kanri" placeholder="例）12000" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label>修繕積立金（円/月）</label>
+            <input type="number" id="shizen" placeholder="例）8000" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label>告知事項・特記事項</label>
+            <textarea id="disclosure" placeholder="雨漏れ歴・心理的瑕疵・境界未確定など"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-lbl">査定価格</div>
+        <div class="card-body">
+          <div class="field">
+            <label>売主希望価格（万円）</label>
+            <input type="number" id="hope" placeholder="例）3800" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label>エージェント査定額（万円）</label>
+            <input type="number" id="est" placeholder="例）3500" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label>推奨売出価格（万円）</label>
+            <input type="number" id="list" placeholder="例）3680" inputmode="numeric">
+          </div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+
+    <!-- ===== PAGE 1: 付帯設備 ===== -->
+    <div class="page" id="p1">
+      <div class="page-hd">
+        <h1>🔧 付帯設備表</h1>
+        <p>各設備の現況をタップして選択してください</p>
+      </div>
+      <div class="card">
+        <div class="card-body" id="equip-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">補足メモ</div>
+        <div class="card-body">
+          <div class="field">
+            <label>引渡し条件・特記事項</label>
+            <textarea id="equip-note" placeholder="例）エアコン（主寝室のみ）は置いていく。その他家具家電は撤去予定。"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+
+    <!-- ===== PAGE 2: 売主ヒアリング ===== -->
+    <div class="page" id="p2">
+      <div class="page-hd">
+        <h1>💬 売主ヒアリング</h1>
+        <p>売主の優先事項・状況を把握する</p>
+      </div>
+
+      <div class="card">
+        <div class="card-lbl">売却の背景</div>
+        <div class="card-body">
+          <div class="field">
+            <label>売却理由</label>
+            <textarea id="reason" placeholder="例）住み替え・転勤・相続・離婚など"></textarea>
+          </div>
+          <div class="field">
+            <label>最優先事項</label>
+            <div class="tab-sel">
+              <input type="radio" name="priority" id="pr1" value="価格"><label for="pr1">💰 価格優先</label>
+              <input type="radio" name="priority" id="pr2" value="スピード"><label for="pr2">⚡ 早く売りたい</label>
+              <input type="radio" name="priority" id="pr3" value="時期"><label for="pr3">📅 時期指定あり</label>
+              <input type="radio" name="priority" id="pr4" value="バランス"><label for="pr4">⚖️ バランス</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>売却期限・目標日</label>
+            <input type="text" id="deadline" placeholder="例）2025年6月末まで">
+          </div>
+          <div class="field">
+            <label>住み替え先の状況</label>
+            <div class="tab-sel">
+              <input type="radio" name="next" id="n1" value="購入検討中"><label for="n1">購入検討中</label>
+              <input type="radio" name="next" id="n2" value="賃貸へ移転"><label for="n2">賃貸へ移転</label>
+              <input type="radio" name="next" id="n3" value="既に確保済み"><label for="n3">既に確保済み</label>
+              <input type="radio" name="next" id="n4" value="特になし"><label for="n4">特になし</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>ローン残債（万円）</label>
+            <input type="number" id="loan" placeholder="例）1200" inputmode="numeric">
+            <div class="hint">残債がある場合、抵当権抹消が必要</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-lbl">価格・条件の柔軟性</div>
+        <div class="card-body">
+          <div class="field">
+            <label>価格交渉への対応</label>
+            <div class="tab-sel">
+              <input type="radio" name="nego" id="ng1" value="不可"><label for="ng1">🚫 不可</label>
+              <input type="radio" name="nego" id="ng2" value="要相談"><label for="ng2">🤔 要相談</label>
+              <input type="radio" name="nego" id="ng3" value="柔軟対応可"><label for="ng3">✅ 柔軟対応可</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>許容できる最低価格（万円）</label>
+            <input type="number" id="minprice" placeholder="例）3300" inputmode="numeric">
+            <div class="hint">売主のボトムラインを事前把握</div>
+          </div>
+          <div class="field">
+            <label>買取転換の意向</label>
+            <div class="tab-sel">
+              <input type="radio" name="kaitori" id="k1" value="検討可"><label for="k1">検討可</label>
+              <input type="radio" name="kaitori" id="k2" value="不可"><label for="k2">不可</label>
+              <input type="radio" name="kaitori" id="k3" value="未定"><label for="k3">未定</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>買取転換検討ライン（ヶ月）</label>
+            <input type="number" id="kaitori-m" placeholder="例）3" inputmode="numeric">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-lbl">コミュニケーション</div>
+        <div class="card-body">
+          <div class="field">
+            <label>連絡のとりやすい時間帯（複数可）</label>
+            <div class="tab-sel multi">
+              <input type="checkbox" name="ctime" id="ct1" value="平日日中"><label for="ct1">平日日中</label>
+              <input type="checkbox" name="ctime" id="ct2" value="平日夕方以降"><label for="ct2">平日夕方以降</label>
+              <input type="checkbox" name="ctime" id="ct3" value="土日"><label for="ct3">土日</label>
+              <input type="checkbox" name="ctime" id="ct4" value="いつでも可"><label for="ct4">いつでも可</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>希望連絡手段</label>
+            <div class="tab-sel">
+              <input type="radio" name="cmethod" id="cm1" value="電話"><label for="cm1">📞 電話</label>
+              <input type="radio" name="cmethod" id="cm2" value="LINE"><label for="cm2">💬 LINE</label>
+              <input type="radio" name="cmethod" id="cm3" value="メール"><label for="cm3">📧 メール</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>内見対応可能な時間帯</label>
+            <input type="text" id="naiken-time" placeholder="例）土日午前 ／ 平日15時以降">
+          </div>
+          <div class="field">
+            <label>売却経験</label>
+            <div class="tab-sel">
+              <input type="radio" name="exp" id="e1" value="初めて"><label for="e1">初めて</label>
+              <input type="radio" name="exp" id="e2" value="経験あり"><label for="e2">経験あり</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>個別配慮事項・メモ</label>
+            <textarea id="note-personal" placeholder="相続案件で複数名義人あり、など"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+
+    <!-- ===== PAGE 3: 販売戦略 ===== -->
+    <div class="page" id="p3">
+      <div class="page-hd">
+        <h1>📣 販売戦略</h1>
+        <p>チャネル・価格シナリオ・訴求ポイントを設定</p>
+      </div>
+
+      <div class="sum-row" id="sum-row">
+        <div class="sum-box"><div class="sl">推奨売出</div><div class="sv" id="sv1">—</div><div class="ss">万円</div></div>
+        <div class="sum-box gold"><div class="sl">売主希望</div><div class="sv" id="sv2">—</div><div class="ss">万円</div></div>
+        <div class="sum-box green"><div class="sl">最低価格</div><div class="sv" id="sv3">—</div><div class="ss">万円</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-lbl">販売チャネル</div>
+        <div class="card-body" id="ch-list"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-lbl">価格戦略シナリオ</div>
+        <div class="card-body" id="phase-list"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-lbl">物件訴求・戦略メモ</div>
+        <div class="card-body">
+          <div class="field">
+            <label>キャッチコピー候補</label>
+            <input type="text" id="catch" placeholder="例）駅5分・南向き角部屋・フルリノベ済み">
+          </div>
+          <div class="field">
+            <label>ターゲット顧客像</label>
+            <input type="text" id="target" placeholder="例）子育てファミリー、共働きカップル">
+          </div>
+          <div class="field">
+            <label>主な訴求ポイント</label>
+            <textarea id="appeal" placeholder="立地・間取り・設備・眺望・価格競争力など具体的に"></textarea>
+          </div>
+          <div class="field">
+            <label>内見時の注意点・準備事項</label>
+            <textarea id="naiken-note" placeholder="例）採光は午前中が一番良い、収納の多さをアピール"></textarea>
+          </div>
+          <div class="field">
+            <label>エージェント戦略メモ</label>
+            <textarea id="strategy" placeholder="売主の温度感・競合との差別化ポイント・懸念点など自由に記入"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+
+    <!-- ===== PAGE 4: 確認・PDF ===== -->
+    <div class="page" id="p4">
+      <div class="page-hd">
+        <h1>✅ 確認・PDF出力</h1>
+        <p>内容を確認してPDF保存してください</p>
+      </div>
+      <div id="conf-content"></div>
+      <div class="spacer"></div>
+    </div>
+
+  </div><!-- #scroll -->
+
+  <!-- BOTTOM NAV -->
+  <div id="bottom">
+    <button class="btn btn-back" id="btn-back" onclick="back()" style="display:none">← 戻る</button>
+    <button class="btn btn-next" id="btn-next" onclick="next()">次へ →</button>
+    <button class="btn btn-pdf"  id="btn-pdf"  onclick="doPrint()" style="display:none">📄 PDF保存</button>
+    <button class="btn btn-reset" id="btn-reset" onclick="resetAll()" style="display:none">🗑️</button>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const EQUIP = [
+  {cat:'キッチン', items:['システムキッチン','食器洗い乾燥機','ガスコンロ（ビルトイン）','IHクッキングヒーター（ビルトイン）','レンジフード']},
+  {cat:'浴室・洗面', items:['ユニットバス','追い炊き機能','浴室暖房乾燥機','シャワー（ハンドシャワー）','洗面台（三面鏡）']},
+  {cat:'空調・換気', items:['エアコン（居室）','エアコン（LD）','床暖房','24時間換気システム']},
+  {cat:'収納・設備', items:['クローゼット','ウォークインクローゼット','シューズボックス','トイレ（ウォシュレット付）','TV（地デジ・BS）アンテナ']},
+  {cat:'セキュリティ', items:['オートロック','モニター付インターホン','宅配ボックス','駐車場（付属）','駐輪場（付属）']},
+  {cat:'その他', items:['給湯器','インターネット設備','照明器具（付属）','カーテン・ブラインド（付属）']},
+];
+
+const CHANNELS = [
+  {id:'portal', icon:'🔍', name:'ポータル掲載', sub:'SUUMO / HOME\'S / アットホーム', on:true},
+  {id:'terass', icon:'🏢', name:'TERASS Offer', sub:'TERASSプラットフォーム', on:true},
+  {id:'investor', icon:'💼', name:'投資家・買取業者', sub:'買取査定・業者ネットワーク', on:false},
+  {id:'sns', icon:'📱', name:'SNS・動画訴求', sub:'Instagram / YouTube', on:false},
+  {id:'agentnet', icon:'🤝', name:'エージェントネットワーク', sub:'他エージェント経由の紹介', on:true},
+];
+
+const PHASES = [
+  {label:'Phase 1', period:'〜2週間', trigger:'初期反響確認'},
+  {label:'Phase 2', period:'3〜4週目', trigger:'内見 < 2件/週'},
+  {label:'Phase 3', period:'5〜6週目', trigger:'申込なし・停滞'},
+  {label:'Phase 4', period:'7〜8週目', trigger:'内見あり申込なし'},
+  {label:'Phase 5', period:'2ヶ月〜', trigger:'売主と協議'},
+];
+
+const st = { eq:{}, eqnote:{}, ch:{}, chpri:{}, ph:{}, phprd:{}, phtrig:{} };
+let cur = 0;
+
+// ===== BUILD EQUIP =====
+function buildEquip() {
+  const el = document.getElementById('equip-list');
+  EQUIP.forEach(cat => {
+    const catEl = document.createElement('div');
+    catEl.className = 'equip-cat';
+    catEl.textContent = cat.cat;
+    el.appendChild(catEl);
+    cat.items.forEach(item => {
+      const eid = 'eq_' + item.replace(/[^\w]/g,'_');
+      const wrap = document.createElement('div');
+      wrap.className = 'equip-item';
+      wrap.innerHTML = `
+        <div class="equip-name">${item}</div>
+        <div class="eq-btns">
+          <button class="eq-btn" data-eid="${eid}" data-v="yes" onclick="setEq('${eid}','yes',this)">付属</button>
+          <button class="eq-btn" data-eid="${eid}" data-v="no"  onclick="setEq('${eid}','no',this)">なし</button>
+          <button class="eq-btn" data-eid="${eid}" data-v="unk" onclick="setEq('${eid}','unk',this)">確認中</button>
+        </div>`;
+      el.appendChild(wrap);
+      // note input
+      const noteWrap = document.createElement('div');
+      noteWrap.style.paddingLeft = '0';
+      noteWrap.innerHTML = `<input type="text" class="equip-note-input" id="${eid}_note" placeholder="年式・状態メモ（任意）" oninput="st.eqnote['${eid}']=this.value;save()">`;
+      el.appendChild(noteWrap);
+    });
+  });
+}
+
+function setEq(eid, val, btn) {
+  st.eq[eid] = val;
+  const btns = document.querySelectorAll(`.eq-btn[data-eid="${eid}"]`);
+  btns.forEach(b => b.classList.remove('yes','no','unk'));
+  btn.classList.add(val);
+  // show note input when付属
+  const noteEl = document.getElementById(eid + '_note');
+  if (noteEl) noteEl.classList.toggle('show', val === 'yes');
+  save();
+}
+
+// ===== BUILD CHANNELS =====
+function buildChannels() {
+  const el = document.getElementById('ch-list');
+  CHANNELS.forEach(ch => {
+    st.ch[ch.id] = ch.on;
+    st.chpri[ch.id] = ch.on ? '最優先' : '';
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `
+      <div class="ch-item">
+        <div class="ch-icon">${ch.icon}</div>
+        <div class="ch-info">
+          <div class="ch-name">${ch.name}</div>
+          <div class="ch-sub">${ch.sub}</div>
+        </div>
+        <div class="toggle ${ch.on?'on':''}" id="tgl-${ch.id}" onclick="toggleCh('${ch.id}')"></div>
+      </div>
+      <div class="ch-detail" id="chd-${ch.id}" style="display:${ch.on?'block':'none'}">
+        <select id="chpri-${ch.id}" onchange="st.chpri['${ch.id}']=this.value;save()">
+          <option value="">優先度を選択</option>
+          <option value="最優先" ${ch.on?'selected':''}>最優先</option>
+          <option value="並行">並行</option>
+          <option value="補助">補助</option>
+          <option value="条件次第">条件次第</option>
+        </select>
+      </div>`;
+    el.appendChild(wrap);
+  });
+}
+
+function toggleCh(id) {
+  st.ch[id] = !st.ch[id];
+  document.getElementById('tgl-'+id).classList.toggle('on', st.ch[id]);
+  document.getElementById('chd-'+id).style.display = st.ch[id] ? 'block' : 'none';
+  save();
+}
+
+// ===== BUILD PHASES =====
+function buildPhases() {
+  const el = document.getElementById('phase-list');
+  PHASES.forEach((ph,i) => {
+    st.ph[i] = ''; st.phprd[i] = ph.period; st.phtrig[i] = ph.trigger;
+    const row = document.createElement('div');
+    row.className = 'phase-row';
+    row.innerHTML = `
+      <div class="phase-badge">${ph.label}</div>
+      <div class="inline-inputs">
+        <input type="number" id="ph-p${i}" placeholder="売出価格（万円）" inputmode="numeric" style="flex:1" oninput="st.ph[${i}]=this.value;save()">
+        <span>万円</span>
+      </div>
+      <div class="field" style="margin-top:8px;margin-bottom:0">
+        <input type="text" id="ph-d${i}" placeholder="期間：${ph.period}" oninput="st.phprd[${i}]=this.value;save()">
+      </div>
+      <div class="field" style="margin-top:6px;margin-bottom:0">
+        <input type="text" id="ph-t${i}" placeholder="判断基準：${ph.trigger}" oninput="st.phtrig[${i}]=this.value;save()">
+      </div>`;
+    el.appendChild(row);
+  });
+}
+
+// ===== NAVIGATION =====
+function goTo(n) {
+  document.querySelectorAll('.page').forEach((p,i) => p.classList.toggle('active', i===n));
+  for (let i=0;i<5;i++) {
+    const d = document.getElementById('dot'+i);
+    d.classList.remove('active','done');
+    if (i===n) d.classList.add('active');
+    else if (i<n) d.classList.add('done');
+  }
+  cur = n;
+  document.getElementById('btn-back').style.display = n > 0 ? '' : 'none';
+  document.getElementById('btn-next').style.display = n < 4 ? '' : 'none';
+  document.getElementById('btn-pdf').style.display = n === 4 ? '' : 'none';
+  document.getElementById('btn-reset').style.display = n === 4 ? '' : 'none';
+  document.getElementById('scroll').scrollTop = 0;
+  if (n===3) updateSummary();
+  if (n===4) buildConfirm();
+}
+
+function next() { goTo(Math.min(cur+1, 4)); }
+function back() { goTo(Math.max(cur-1, 0)); }
+
+// ===== SUMMARY =====
+function updateSummary() {
+  const lp = document.getElementById('list')?.value;
+  const hp = document.getElementById('hope')?.value;
+  const mp = document.getElementById('minprice')?.value;
+  document.getElementById('sv1').textContent = lp ? Number(lp).toLocaleString() : '—';
+  document.getElementById('sv2').textContent = hp ? Number(hp).toLocaleString() : '—';
+  document.getElementById('sv3').textContent = mp ? Number(mp).toLocaleString() : '—';
+}
+
+// ===== CONFIRM =====
+function gv(id) { const e=document.getElementById(id); return e?.value||'—'; }
+function gr(name) { const e=document.querySelector(`input[name="${name}"]:checked`); return e?e.value:'—'; }
+function gc(name) { const es=[...document.querySelectorAll(`input[name="${name}"]:checked`)]; return es.length?es.map(e=>e.value).join('、'):'—'; }
+
+function prow(lbl, val) {
+  return `<div class="p-row"><div class="p-lbl">${lbl}</div><div class="p-val">${val||'—'}</div></div>`;
+}
+function psec(title, rows) {
+  return `<div class="p-sec"><div class="p-hd">${title}</div><div class="p-bd">${rows}</div></div>`;
+}
+
+function buildConfirm() {
+  const date = new Date().toLocaleDateString('ja-JP');
+  // ---- 画面上の確認カード ----
+  const html = [];
+  const mkSec = (title, rows) => `<div class="conf-sec"><div class="conf-hd">${title}</div><div class="conf-bd">${rows.map(([l,v])=>`<div class="conf-row"><div class="conf-lbl">${l}</div><div class="conf-val">${v||'—'}</div></div>`).join('')}</div></div>`;
+
+  html.push(mkSec('🏠 物件概要',[
+    ['所在地',gv('address')],['物件種別',gr('type')],['間取り',gr('madori')],
+    ['専有面積',gv('area')+' ㎡'],['築年',gv('built')+' 年'],
+    ['階数',gv('floor')+'階 ／ '+gv('ftotal')+'階建'],
+    ['最寄駅',gv('station')+' 徒歩'+gv('walk')+'分'],
+    ['リフォーム',gr('reform')+' '+gv('reform-detail')],
+    ['現況',gr('status')],['引渡し時期',gv('delivery')],
+    ['管理費',gv('kanri')+' 円/月'],['修繕積立金',gv('shizen')+' 円/月'],
+    ['告知事項',gv('disclosure')],
+    ['売主希望価格',gv('hope')+' 万円'],['エージェント査定額',gv('est')+' 万円'],['推奨売出価格',gv('list')+' 万円'],
+  ]));
+
+  // 付帯設備（入力済みのみ）
+  const eqRows = [];
+  EQUIP.forEach(cat => cat.items.forEach(item => {
+    const eid = 'eq_'+item.replace(/[^\w]/g,'_');
+    const s = st.eq[eid];
+    if (s) {
+      const lbl = s==='yes'?'✅ 付属':(s==='no'?'❌ なし':'🔶 確認中');
+      const n = document.getElementById(eid+'_note')?.value;
+      eqRows.push([item, lbl+(n?' / '+n:'')]);
+    }
+  }));
+  if (eqRows.length) html.push(mkSec('🔧 付帯設備', eqRows));
+  if (gv('equip-note')!=='—') html.push(mkSec('📝 付帯設備メモ',[['特記事項',gv('equip-note')]]));
+
+  html.push(mkSec('💬 売主ヒアリング',[
+    ['売却理由',gv('reason')],['最優先事項',gr('priority')],['売却期限',gv('deadline')],
+    ['住み替え先',gr('next')],['ローン残債',gv('loan')+' 万円'],
+    ['価格交渉',gr('nego')],['許容最低価格',gv('minprice')+' 万円'],
+    ['買取転換',gr('kaitori')],['連絡可能時間',gc('ctime')],
+    ['連絡手段',gr('cmethod')],['内見対応可能',gv('naiken-time')],
+    ['個別配慮',gv('note-personal')],
+  ]));
+
+  const chRows = CHANNELS.filter(ch=>st.ch[ch.id]).map(ch=>[ch.name, '優先度：'+(st.chpri[ch.id]||'—')]);
+  if (chRows.length) html.push(mkSec('📣 販売チャネル', chRows));
+
+  const phRows = PHASES.map((ph,i)=>[ph.label, (document.getElementById('ph-p'+i)?.value||'未設定')+'万円 ／ '+(document.getElementById('ph-d'+i)?.value||ph.period)+' ／ '+(document.getElementById('ph-t'+i)?.value||ph.trigger)]);
+  html.push(mkSec('📉 価格シナリオ', phRows));
+
+  html.push(mkSec('🏡 物件訴求・戦略メモ',[
+    ['キャッチコピー',gv('catch')],['ターゲット',gv('target')],
+    ['訴求ポイント',gv('appeal')],['内見注意点',gv('naiken-note')],['戦略メモ',gv('strategy')],
+  ]));
+
+  document.getElementById('conf-content').innerHTML = html.join('');
+
+  // ---- 印刷用エリア ----
+  let phtml = `<div class="p-title">不動産販売戦略シート</div><div class="p-meta">TERASS　　作成日：${date}　　担当エージェント：</div>`;
+
+  phtml += psec('🏠 物件概要',
+    [['所在地',gv('address')],['物件種別',gr('type')],['間取り',gr('madori')],['専有面積',gv('area')+' ㎡'],['築年',gv('built')+' 年'],['階数',gv('floor')+'階 ／ '+gv('ftotal')+'階建'],['最寄駅',gv('station')+' 徒歩'+gv('walk')+'分'],['リフォーム',gr('reform')+' '+gv('reform-detail')],['現況',gr('status')],['引渡し時期',gv('delivery')],['管理費',gv('kanri')+' 円/月'],['修繕積立金',gv('shizen')+' 円/月'],['告知事項',gv('disclosure')],['売主希望価格',gv('hope')+' 万円'],['査定額',gv('est')+' 万円'],['推奨売出価格',gv('list')+' 万円']]
+    .map(([l,v])=>prow(l,v)).join(''));
+
+  if (eqRows.length) phtml += psec('🔧 付帯設備', eqRows.map(([l,v])=>prow(l,v)).join(''));
+
+  phtml += psec('💬 売主ヒアリング',
+    [['売却理由',gv('reason')],['最優先事項',gr('priority')],['売却期限',gv('deadline')],['住み替え先',gr('next')],['ローン残債',gv('loan')+' 万円'],['価格交渉',gr('nego')],['許容最低価格',gv('minprice')+' 万円'],['買取転換',gr('kaitori')],['連絡可能時間',gc('ctime')],['連絡手段',gr('cmethod')],['内見対応可能',gv('naiken-time')],['個別配慮',gv('note-personal')]]
+    .map(([l,v])=>prow(l,v)).join(''));
+
+  if (chRows.length) phtml += psec('📣 販売チャネル', chRows.map(([l,v])=>prow(l,v)).join(''));
+  phtml += psec('📉 価格シナリオ', phRows.map(([l,v])=>prow(l,v)).join(''));
+  phtml += psec('🏡 物件訴求・戦略メモ',
+    [['キャッチコピー',gv('catch')],['ターゲット',gv('target')],['訴求ポイント',gv('appeal')],['内見注意点',gv('naiken-note')],['戦略メモ',gv('strategy')]]
+    .map(([l,v])=>prow(l,v)).join(''));
+
+  document.getElementById('print-area').innerHTML = phtml;
+}
+
+function doPrint() {
+  buildConfirm();
+  requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+}
+
+// ===== SAVE / LOAD =====
+function save() {
+  try {
+    const d = {};
+    document.querySelectorAll('input[type=text],input[type=number],textarea').forEach(e => { if(e.id) d[e.id]=e.value; });
+    document.querySelectorAll('input[type=radio]:checked').forEach(e => { d['r_'+e.name]=e.value; });
+    document.querySelectorAll('input[type=checkbox]').forEach(e => { d['c_'+e.name+'_'+e.value]=e.checked; });
+    d._st = st;
+    localStorage.setItem('terass_v2', JSON.stringify(d));
+    const b = document.getElementById('save-badge');
+    b.style.opacity = '1';
+    setTimeout(() => b.style.opacity = '0', 1500);
+  } catch(e) {}
+  updateSummary();
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem('terass_v2');
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d._st) {
+      Object.assign(st.eq, d._st.eq||{});
+      Object.assign(st.eqnote, d._st.eqnote||{});
+      Object.assign(st.ch, d._st.ch||{});
+      Object.assign(st.chpri, d._st.chpri||{});
+      Object.assign(st.ph, d._st.ph||{});
+    }
+    Object.entries(d).forEach(([k,v]) => {
+      if (k==='_st') return;
+      if (k.startsWith('r_')) {
+        const el = document.querySelector(`input[name="${k.slice(2)}"][value="${v}"]`);
+        if (el) el.checked = true;
+      } else if (k.startsWith('c_')) {
+        const parts = k.slice(2).split('_');
+        const el = document.querySelector(`input[name="${parts[0]}"][value="${parts.slice(1).join('_')}"]`);
+        if (el) el.checked = v;
+      } else {
+        const el = document.getElementById(k);
+        if (el) el.value = v;
+      }
+    });
+    // restore equip status buttons
+    Object.entries(st.eq).forEach(([eid,val]) => {
+      const btn = document.querySelector(`.eq-btn[data-eid="${eid}"][data-v="${val}"]`);
+      if (btn) { btn.classList.add(val); }
+      if (val==='yes') {
+        const ni = document.getElementById(eid+'_note');
+        if (ni) ni.classList.add('show');
+      }
+    });
+    // restore channel state
+    Object.entries(st.ch).forEach(([id,on]) => {
+      document.getElementById('tgl-'+id)?.classList.toggle('on', on);
+      const det = document.getElementById('chd-'+id);
+      if (det) det.style.display = on ? 'block' : 'none';
+    });
+    Object.entries(st.chpri).forEach(([id,v]) => {
+      const el = document.getElementById('chpri-'+id);
+      if (el && v) el.value = v;
+    });
+    // restore phase inputs
+    Object.entries(st.ph).forEach(([i,v]) => {
+      const el = document.getElementById('ph-p'+i);
+      if (el && v) el.value = v;
+    });
+    updateSummary();
+  } catch(e) {}
+}
+
+function resetAll() {
+  if (!confirm('すべての入力をリセットしますか？')) return;
+  localStorage.removeItem('terass_v2');
+  location.reload();
+}
+
+// ===== AUTO SAVE =====
+document.addEventListener('input', save);
+document.addEventListener('change', save);
+
+// ===== AGE HINT =====
+document.getElementById('built').addEventListener('input', function() {
+  const y = parseInt(this.value);
+  const h = document.getElementById('age-hint');
+  h.textContent = (y > 1900 && y <= 2030) ? `築約${new Date().getFullYear()-y}年` : '';
+});
+
+// ===== INIT =====
+buildEquip();
+buildChannels();
+buildPhases();
+load();
+</script>
+</body>
+</html>
